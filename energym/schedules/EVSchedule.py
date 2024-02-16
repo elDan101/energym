@@ -3,6 +3,7 @@ import datetime
 import random
 import numpy as np
 from copy import deepcopy
+import warnings
 
 from random import normalvariate, randint
 from scipy.stats import truncnorm
@@ -53,11 +54,11 @@ class ElectricVehicleSchedule(ScheduleAbstract):
         self.schedule = pd.DataFrame(
             {
                 "Time": range_year,
-                "Discharge_rate": 0,
-                "Available": 0,
+                "Discharge_rate": 0.,
+                "Available": 0.,
             }
         )
-        self.schedule["Week"] = self.schedule["Time"].dt.week
+        self.schedule["Week"] = self.schedule["Time"].dt.isocalendar().week
         self.schedule["Day"] = self.schedule["Time"].dt.weekday
         self.schedule["Hour"] = self.schedule["Time"].dt.hour
         self.schedule["Minute"] = self.schedule["Time"].dt.minute
@@ -158,8 +159,11 @@ class ElectricVehicleSchedule(ScheduleAbstract):
                 self.discharge_rate,
             )
 
-            self.schedule.update(df_day)
-            self.prediction.update(df_day_pred)
+
+            with warnings.catch_warnings():
+                warnings.simplefilter(action='ignore', category=FutureWarning)
+                self.schedule.update(df_day)
+                self.prediction.update(df_day_pred)
 
         self.schedule = self.schedule.set_index("Time")
         self.prediction = self.prediction.set_index("Time")

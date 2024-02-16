@@ -91,7 +91,7 @@ setuptools.setup(
     url="",
     packages=setuptools.find_packages(),
     install_requires=[
-        "pandas>=0.24",
+        "pandas>=0.24,<=2.0.0",
         "FMPy>=0.2.14",
         "scipy>=1.2.3",
         "numpy>=1.16",
